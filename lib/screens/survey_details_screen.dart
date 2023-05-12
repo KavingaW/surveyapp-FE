@@ -24,6 +24,7 @@
 import 'package:flutter/material.dart';
 import 'package:surveyapp/screens/question_update_screen.dart';
 import 'package:surveyapp/screens/survey_assigned_users_screen.dart';
+import 'package:surveyapp/utils/constants.dart';
 
 import '../model/survey_api_response.dart';
 
@@ -122,6 +123,7 @@ import '../model/survey_api_response.dart';
 
 import 'package:surveyapp/service/survey_service.dart';
 
+import '../service/question_service.dart';
 import '../service/user_service.dart';
 import 'add_question_screen.dart';
 
@@ -137,6 +139,7 @@ class SurveyDetailsScreen extends StatefulWidget {
 class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
   late Survey _survey;
   final _surveyService = SurveyService();
+  final _questionService = QuestionService();
 
   @override
   void initState() {
@@ -163,9 +166,15 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
     // Update the survey object with the edited question
   }
 
+  void _deleteQuestion(String token, String questionId) {
+    _questionService.deleteQuestion(token, questionId);
+  }
+
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    var size = MediaQuery
+        .of(context)
+        .size;
     var height = size.height;
     var width = size.width;
 
@@ -174,7 +183,8 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
         title: Text('Survey Details'),
         actions: [
           PopupMenuButton(
-            itemBuilder: (context) => [
+            itemBuilder: (context) =>
+            [
               PopupMenuItem(
                 value: 'edit',
                 child: Text('Edit'),
@@ -196,7 +206,8 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
               } else if (value == 'viewAssigned') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AssignedUsersScreen(survey: _survey,)),
+                  MaterialPageRoute(builder: (context) =>
+                      AssignedUsersScreen(survey: _survey,)),
                 );
               }
             },
@@ -206,89 +217,100 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
       body: _survey == null
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      _survey.title,
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      _survey.description,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Questions',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  ..._survey.questions.map((question) {
-                    return Card(
-                      margin: EdgeInsets.all(10.0),
-                      child: InkWell(
-                        onTap: () => _editQuestion(question),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                question.text,
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                height: 15,
-                                width: width,
-                              ),
-                              if (question.type == 'MCQ')
-                                ...question.options.map((option) {
-                                  return Text('- $option');
-                                }),
-                              if (question.type == 'YES/NO')
-                                ...question.options.map((option) {
-                                  return Text(
-                                      '- ${option == 'Yes' ? 'Yes' : 'No'}');
-                                }),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                  SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Assigned Users',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(_survey.assigned.join(', ')),
-                  ),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                _survey.title,
+                style: TextStyle(fontSize: 20),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                _survey.description,
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Questions',
+                style:
+                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ..._survey.questions.map((question) {
+              return Card(
+                margin: EdgeInsets.all(10.0),
+                child: InkWell(
+                  onTap: () => _editQuestion(question),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              question.text,
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () =>
+                                  _deleteQuestion(TextFile.token, question.id),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 15,
+                          width: width,
+                        ),
+                        if (question.type == 'MCQ')
+                          ...question.options.map((option) {
+                            return Text('- $option');
+                          }),
+                        if (question.type == 'YES/NO')
+                          ...question.options.map((option) {
+                            return Text(
+                                '- ${option == 'Yes' ? 'Yes' : 'No'}');
+                          }),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Assigned Users',
+                style:
+                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(_survey.assigned.join(', ')),
+            ),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => QuestionAddScreen(
+                builder: (context) =>
+                    QuestionAddScreen(
                       survey: _survey,
                     )),
           );
@@ -300,7 +322,8 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
   }
 }
 
- _deleteSurvey() {}
+
+_deleteSurvey() {}
 
 void _updateSurvey() {}
 

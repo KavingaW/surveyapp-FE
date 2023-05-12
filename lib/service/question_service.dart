@@ -45,4 +45,22 @@ class QuestionService {
       throw Exception('Failed to get user details');
     }
   }
+
+  Future<String> deleteQuestion(String token, String questionId) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/$questionId'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      // var jsonData = jsonDecode(response.body) as List;
+      // List<User> userList = jsonData.map((e) => User.fromJson(e)).toList();
+
+      String deleted = 'deleted';
+      return deleted;
+    } else {
+      throw Exception("Error on fetching data");
+    }
+  }
 }
