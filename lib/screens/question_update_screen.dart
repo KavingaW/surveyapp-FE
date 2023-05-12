@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:surveyapp/screens/survey_details_screen.dart';
 import 'package:surveyapp/service/question_service.dart';
 import 'package:surveyapp/utils/constants.dart';
 import '../model/survey_api_response.dart';
+import '../widgets/delete_response_widget.dart';
+import '../widgets/delete_widget.dart';
 
 // class QuestionUpdateScreen extends StatefulWidget {
 //   final Question question;
@@ -203,6 +206,27 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Question'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => DeleteConfirmationDialog(
+                  onConfirm: () {
+                    questionService.deleteQuestion(
+                        TextFile.token, widget.question.id);
+                    DeleteResponseMessage.show(
+                      context,
+                      'Question has been deleted successfully.',
+                    );
+                    Navigator.pop(context);
+                  },
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
