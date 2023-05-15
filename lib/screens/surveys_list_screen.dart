@@ -4,6 +4,7 @@ import 'package:surveyapp/screens/survey_details_screen.dart';
 import '../model/survey_api_response.dart';
 import '../service/survey_service.dart';
 import '../widgets/logout_widget.dart';
+import 'add_new_survey_scren.dart';
 
 class SurveyListScreen extends StatefulWidget {
   @override
@@ -12,7 +13,7 @@ class SurveyListScreen extends StatefulWidget {
 
 class _SurveyListScreen extends State<StatefulWidget> {
   late List<Survey> _surveyList;
-  SurveyService surveyService = new SurveyService();
+  SurveyService surveyService = SurveyService();
 
   @override
   void initState() {
@@ -62,6 +63,18 @@ class _SurveyListScreen extends State<StatefulWidget> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AddSurveyScreen(
+                    )),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

@@ -228,101 +228,103 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                labelText: 'Question',
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: DropdownButtonFormField<String>(
-              value: _questionType,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _questionType = newValue!;
-                  _canAddMoreOptions = _questionType != 'YES/NO';
-                  if (_questionType == 'YES/NO') {
-                    _options = ['Yes', 'No'];
-                  } else {
-                    _options = [];
-                  }
-                });
-              },
-              items: <String>[
-                'MCQ',
-                'YES/NO',
-              ].map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Question Type',
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Options',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                controller: _textController,
+                decoration: InputDecoration(
+                  labelText: 'Question',
                 ),
-                SizedBox(height: 8),
-                ..._options.map((option) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: TextEditingController(text: option),
-                          onChanged: (value) {
-                            _options[_options.indexOf(option)] = value;
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: DropdownButtonFormField<String>(
+                value: _questionType,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _questionType = newValue!;
+                    _canAddMoreOptions = _questionType != 'YES/NO';
+                    if (_questionType == 'YES/NO') {
+                      _options = ['Yes', 'No'];
+                    } else {
+                      _options = [];
+                    }
+                  });
+                },
+                items: <String>[
+                  'MCQ',
+                  'YES/NO',
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  labelText: 'Question Type',
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Options',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  ..._options.map((option) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: TextEditingController(text: option),
+                            onChanged: (value) {
+                              _options[_options.indexOf(option)] = value;
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            if (_questionType == 'MCQ') {
+                              setState(() {
+                                _options.remove(option);
+                              });
+                            }
                           },
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          if (_questionType == 'MCQ') {
-                            setState(() {
-                              _options.remove(option);
-                            });
-                          }
-                        },
-                      ),
-                    ],
-                  );
-                }),
-                SizedBox(height: 8),
-                if (_canAddMoreOptions)
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _options.add('');
-                      });
-                    },
-                    child: Text('Add More Option'),
-                  ),
-              ],
+                      ],
+                    );
+                  }),
+                  SizedBox(height: 8),
+                  if (_canAddMoreOptions)
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _options.add('');
+                        });
+                      },
+                      child: Text('Add More Option'),
+                    ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

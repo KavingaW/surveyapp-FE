@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:surveyapp/helper/validator_helper.dart';
+import 'package:surveyapp/screens/user_dashboard.dart';
 import 'package:surveyapp/service/auth_service.dart';
 
 import '../widgets/login_error.dart';
@@ -27,7 +28,12 @@ class _LoginScreenState extends State<LoginScreen> {
         if (user.role == 'ROLE_ADMIN') {
           Navigator.of(context).pushNamed('/adminDashboard');
         }else if(user.role == "ROLE_USER"){
-          Navigator.of(context).pushNamed('/userDashboard');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserDashboard(user: user),
+            ),
+          );
         }
         // TODO: Navigate to the home screen
       } catch (e) {
