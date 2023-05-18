@@ -77,8 +77,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
             }),
             ElevatedButton(
               onPressed: () {
-                surveyResultService.submitSurveyAnswers(
-                    TextFile.token, widget.userId, widget.survey.id, _answers);
+                surveyResultService.submitSurveyAnswers(widget.userId, widget.survey.id, _answers);
               },
               child: Text('Submit'),
             ),

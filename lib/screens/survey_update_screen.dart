@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:surveyapp/screens/surveys_list_screen.dart';
 
 import 'package:surveyapp/service/survey_service.dart';
 import 'package:surveyapp/model/survey_api_response.dart';
 
 import '../utils/constants.dart';
+import '../widgets/delete_response_widget.dart';
+import '../widgets/delete_widget.dart';
 import 'add_question_screen.dart';
 
 class EditSurveyScreen extends StatefulWidget {
@@ -40,17 +43,15 @@ class _EditSurveyScreenState extends State<EditSurveyScreen> {
       assigned: widget.survey.assigned,
     );
 
-    _surveyService.updateSurvey(TextFile.token, widget.survey.id, _survey);
+    await _surveyService.updateSurvey(widget.survey.id, _survey);
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Survey edited successfully')));
-
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (context) => QuestionAddScreen(
-            survey: _survey,
-          )),
+          builder: (context) => SurveyListScreen()),
     );
+
     // try {
     //   await SurveyService().editSurvey(editedSurvey);
     //   ScaffoldMessenger.of(context).showSnackBar(
@@ -128,7 +129,29 @@ class _EditSurveyScreenState extends State<EditSurveyScreen> {
               // ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: _editSurvey,
+                // onPressed: _editSurvey,
+                onPressed: () {
+                  _editSurvey();
+                  // showDialog(
+                  //   context: context,
+                  //   builder: (_) => ConfirmationDialog(
+                  //     onConfirm: () {
+                  //
+                  //       DeleteResponseMessage.show(
+                  //         context,
+                  //         'Survey has been updated successfully.',
+                  //       );
+                  //       Navigator.push(
+                  //           context!,
+                  //           MaterialPageRoute(
+                  //             builder: (context) => SurveyListScreen(),
+                  //           ));
+                  //     },
+                  //     operation: TextFile.operationUpdate,
+                  //     message: TextFile.messageUpdate,
+                  //   ),
+                  // );
+                },
                 child: Text('Save Changes'),
               ),
             ],

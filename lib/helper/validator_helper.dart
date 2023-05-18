@@ -39,4 +39,34 @@ class HelperValidator {
     return null;
   }
 
+  static String? validateSurveyTitle(String value){
+    if(value.isEmpty){
+      return 'Enter survey title';
+    }
+    return null;
+  }
+
+  static String? validateSurveyDescription(String value){
+    if(value.isEmpty){
+      return 'Enter survey description';
+    }
+    return null;
+  }
+
+  static String? validateQuestionText(String value){
+    if (value.isEmpty) {
+      return 'Please enter the question';
+    }
+    return null;
+  }
+
+static String? validateOption(String value){
+  if (value!.isEmpty) {
+    return 'Please enter an option';
+  }
+  return null;
+}
+
+
+
 }

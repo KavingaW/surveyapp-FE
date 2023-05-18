@@ -25,6 +25,8 @@ import 'package:flutter/material.dart';
 import 'package:surveyapp/screens/question_update_screen.dart';
 import 'package:surveyapp/screens/survey_assigned_users_screen.dart';
 import 'package:surveyapp/screens/survey_update_screen.dart';
+import 'package:surveyapp/screens/surveys_list_screen.dart';
+import 'package:surveyapp/service/survey_result_service.dart';
 import 'package:surveyapp/utils/constants.dart';
 
 import '../model/survey_api_response.dart';
@@ -125,6 +127,8 @@ import 'package:surveyapp/service/survey_service.dart';
 
 import '../service/question_service.dart';
 import '../service/user_service.dart';
+import '../widgets/delete_response_widget.dart';
+import '../widgets/delete_widget.dart';
 import 'add_question_screen.dart';
 
 class SurveyDetailsScreen extends StatefulWidget {
@@ -137,9 +141,9 @@ class SurveyDetailsScreen extends StatefulWidget {
 }
 
 class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
+  late Survey _survey = Survey.empty();
   final _surveyService = SurveyService();
   final _questionService = QuestionService();
-  late Survey _survey = widget.survey;
 
   @override
   void initState() {
@@ -147,9 +151,9 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
     _loadSurveyDetails();
   }
 
-  void _loadSurveyDetails() async {
-    final survey = await _surveyService.getSurvey(widget.survey.id);
+  _loadSurveyDetails() async {
     // final survey = widget.survey;
+    final survey = await _surveyService.getSurvey(widget.survey.id);
     setState(() {
       _survey = survey;
     });
@@ -157,7 +161,7 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
 
   void _editQuestion(Question question) {
     // Navigate to the question edit screen
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
           builder: (context) => QuestionUpdateScreen(question: question)),
@@ -166,27 +170,29 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
     // Update the survey object with the edited question
   }
 
-  void _deleteQuestion(String token, String questionId) {
-    _questionService.deleteQuestion(token, questionId);
+  _deleteQuestion(String questionId, Survey survey) async {
+    await _questionService.deleteQuestion(questionId);
   }
 
-  _deleteSurvey(String token, String surveyId) {
-    _surveyService.deleteSurvey(token, surveyId);
+  _deleteSurvey(String token, String surveyId, BuildContext context) async {
+    await _surveyService.deleteSurvey(surveyId, context);
   }
-
-  void _updateSurvey() {}
-
-  void _addQuestion() {}
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var height = size.height;
     var width = size.width;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Survey Details'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context)
+                .pop(); // Navigate back when the button is pressed
+          },
+        ),
         actions: [
           PopupMenuButton(
             itemBuilder: (context) => [
@@ -205,16 +211,39 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
             ],
             onSelected: (value) {
               if (value == 'edit') {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditSurveyScreen(survey: widget.survey),
+                    builder: (context) =>
+                        EditSurveyScreen(survey: widget.survey),
                   ),
                 );
               } else if (value == 'delete') {
-                _deleteSurvey(TextFile.token, widget.survey.id);
+                showDialog(
+                  context: context,
+                  builder: (_) => ConfirmationDialog(
+                    onConfirm: () async {
+                      await _deleteSurvey(
+                          AppConstants.token, widget.survey.id, context);
+                      DeleteResponseMessage.show(
+                        context,
+                        'Survey has been deleted successfully.',
+                      );
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SurveyListScreen(),
+                          ));
+                    },
+                    operation: AppConstants.operationDelete,
+                    message: AppConstants.messageDelete,
+                  ),
+                );
+
+                //_deleteSurvey(TextFile.token, widget.survey.id, context);
               } else if (value == 'viewAssigned') {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) => AssignedUsersScreen(
@@ -277,8 +306,30 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.delete),
-                                    onPressed: () => _deleteQuestion(
-                                        TextFile.token, question.id),
+                                    onPressed: () => showDialog(
+                                      context: context,
+                                      builder: (_) => ConfirmationDialog(
+                                        onConfirm: () async {
+                                          await _deleteQuestion(
+                                              question.id, _survey);
+                                          DeleteResponseMessage.show(
+                                            context,
+                                            'Question has been deleted successfully.',
+                                          );
+                                          // setState(() {});
+                                          Navigator.pop(context);
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SurveyDetailsScreen(
+                                                        survey: _survey),
+                                              ));
+                                        },
+                                        operation: AppConstants.operationDelete,
+                                        message: AppConstants.messageDelete,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -320,7 +371,7 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => QuestionAddScreen(
@@ -334,3 +385,9 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
     );
   }
 }
+
+_deleteSurvey() {}
+
+void _updateSurvey() {}
+
+void _addQuestion() {}

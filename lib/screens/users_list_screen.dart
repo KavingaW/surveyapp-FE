@@ -4,9 +4,10 @@ import 'package:surveyapp/screens/user_update_screen.dart';
 import 'package:surveyapp/service/user_service.dart';
 import 'package:surveyapp/utils/constants.dart';
 
-import '../model/user_response.dart';
+import '../model/user_admin_response.dart';
 import '../widgets/delete_response_widget.dart';
 import '../widgets/delete_widget.dart';
+import 'add_user.dart';
 
 class UsersScreen extends StatefulWidget {
   @override
@@ -24,9 +25,9 @@ class _UsersScreenState extends State<StatefulWidget> {
     loadUsers();
   }
 
-  void loadUsers() async {
-    userService
-        .getUserList(TextFile.token)
+  loadUsers() async {
+    await userService
+        .getUserList()
         .then((userList) {
       setState(() {
         _userList = userList;
@@ -38,17 +39,18 @@ class _UsersScreenState extends State<StatefulWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registered User List'),
+        title: Text('Registered User List',style: TextStyle(fontFamily: 'RobotoMono'),),
       ),
       body: ListView.builder(
         itemCount: _userList.length,
         itemBuilder: (BuildContext context, int index) {
           User user = _userList[index];
           return ListTile(
+            leading: Icon(Icons.supervised_user_circle_rounded,size: 50.0,),
             title: Text(user.username),
             subtitle: Text(user.email),
             onTap: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => UserUpdateScreen(user: user),
@@ -57,6 +59,15 @@ class _UsersScreenState extends State<StatefulWidget> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AddUser()),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

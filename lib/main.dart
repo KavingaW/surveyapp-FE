@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:surveyapp/routes/app_routes.dart';
 import 'package:surveyapp/screens/add_user.dart';
 import 'package:surveyapp/screens/admin_dashboard.dart';
@@ -8,7 +9,8 @@ import 'package:surveyapp/screens/results_list_screen.dart';
 import 'package:surveyapp/screens/surveys_list_screen.dart';
 import 'package:surveyapp/screens/users_list_screen.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 

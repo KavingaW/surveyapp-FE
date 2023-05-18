@@ -9,6 +9,11 @@ class User {
     required this.email,
   });
 
+  User.empty()
+      : id = '',
+        username = '',
+        email = '';
+
   String get _id => id;
   set id(String value) => id = value;
 
@@ -34,8 +39,6 @@ class User {
     data['id'] = user.id;
     data['username'] = user.username;
     data['email'] = user.email;
-    data['password'] = null;
-    data['roles'] = null;
     return data;
   }
 }

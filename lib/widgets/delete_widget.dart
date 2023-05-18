@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 
-class DeleteConfirmationDialog extends StatelessWidget {
+class ConfirmationDialog extends StatelessWidget {
   final VoidCallback onConfirm;
+  String operation;
+  String message;
 
-  DeleteConfirmationDialog({required this.onConfirm});
+  ConfirmationDialog(
+      {required this.onConfirm, required this.operation, required this.message});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Confirm Deletion"),
-      content: Text("Are you sure you want to delete this user?"),
+      title: Text('Confirm $operation'),
+      content: Text(message),
       actions: [
         TextButton(
           child: Text("Cancel"),
           onPressed: () => Navigator.of(context).pop(),
         ),
         ElevatedButton(
-          child: Text("Delete"),
+          child: Text(operation),
           onPressed: () {
             onConfirm();
           },

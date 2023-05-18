@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:surveyapp/model/user_token_response.dart';
 import 'package:surveyapp/screens/survey_result_screen.dart';
 import 'package:surveyapp/screens/survey_screen.dart';
 import 'package:surveyapp/screens/user_update_screen.dart';
+import 'package:surveyapp/service/auth_service.dart';
 import 'package:surveyapp/service/survey_result_service.dart';
 import 'package:surveyapp/service/survey_service.dart';
 
 import '../model/survey_api_response.dart';
-import '../model/user_token_response.dart';
 
 import 'package:flutter/material.dart';
 
 import '../service/test_service.dart';
+import '../utils/constants.dart';
+import '../widgets/delete_response_widget.dart';
+import '../widgets/delete_widget.dart';
+import 'edit_user_details.dart';
 
 class UserDashboard extends StatefulWidget {
   final User user;
@@ -22,8 +28,9 @@ class UserDashboard extends StatefulWidget {
 }
 
 class _UserDashboardState extends State<UserDashboard> {
-  SurveyService _surveyService = SurveyService();
-  SurveyResultService _surveyResultService = SurveyResultService();
+  final _surveyService = SurveyService();
+  final _authService = AuthService();
+  final _surveyResultService = SurveyResultService();
   List<Survey> _assignedSurveys = [];
   List<Survey> _completedSurveys = [];
 
@@ -55,6 +62,52 @@ class _UserDashboardState extends State<UserDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: Text('User Dashboard'),
+        actions: [
+          PopupMenuButton(
+            icon: Icon(Icons.person),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'update',
+                child: Text('Update'),
+              ),
+              PopupMenuItem(
+                value: 'logout',
+                child: Text('Logout'),
+              ),
+            ],
+            onSelected: (value) {
+              if (value == 'update') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditUserScreen(
+                            userId: widget.user.id,
+                          )),
+                );
+                // _updateSurvey();
+              } else if (value == 'logout') {
+                showDialog(
+                  context: context,
+                  builder: (_) => ConfirmationDialog(
+                    onConfirm: () async {
+                      //userService.deleteUser(TextFile.token, widget.user.id);
+                      DeleteResponseMessage.show(
+                        context,
+                        'Successfully logged out.',
+                      );
+
+                      Navigator.pop(context);
+                      _authService.logOut();
+                      Navigator.pushReplacementNamed(context, '/loginScreen');
+                    },
+                    operation: AppConstants.operationLogout,
+                    message: AppConstants.messageLogout,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: DefaultTabController(
         length: 2,
@@ -116,6 +169,9 @@ class _UserDashboardState extends State<UserDashboard> {
                           subtitle: Text(_completedSurveys[index].description),
                           trailing: ElevatedButton(
                             onPressed: () {
+                              _surveyResultService
+                                  .getUserCompletedSurveyList(widget.user.id);
+
                               // Navigator.pushNamed(
                               //   context,
                               //   '/survey-results',
@@ -132,13 +188,15 @@ class _UserDashboardState extends State<UserDashboard> {
                               //           surveyId: _completedSurveys[index].id,
                               //           userId: widget.user.id)),
                               // );
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => SurveyResultScreen(
-                              //         surveyId: _completedSurveys[index].id),
-                              //   ),
-                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SurveyResultScreen(
+                                    surveyId: _completedSurveys[index].id,
+                                    userId: widget.user.id,
+                                  ),
+                                ),
+                              );
                             },
                             child: Text('View Answers'),
                           ),

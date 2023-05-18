@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:surveyapp/screens/survey_details_screen.dart';
 
 import '../model/survey_api_response.dart';
+import '../service/survey_result_service.dart';
 import '../service/survey_service.dart';
 import '../widgets/logout_widget.dart';
 import 'add_new_survey_scren.dart';
@@ -14,20 +15,17 @@ class SurveyListScreen extends StatefulWidget {
 class _SurveyListScreen extends State<StatefulWidget> {
   late List<Survey> _surveyList;
   SurveyService surveyService = SurveyService();
+  final _surveyResultService = SurveyResultService();
 
   @override
   void initState() {
     super.initState();
-    _surveyList = [];
     loadSurveys();
+    _surveyList = [];
   }
 
-  void loadSurveys() async {
-    surveyService
-        .getSurveyList(
-            // "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2NDQ4MDVjYmVhY2NkNjJlNGJiYTQ4YzgiLCJpYXQiOjE2ODM2MDI2NjEsImV4cCI6MTY4MzY4OTA2MX0.aMdst5AmL1XaYu7Zmn1oU61LoQKuZiVmHq6sQ6BEzaQ")
-            )
-        .then((surveyList) {
+  loadSurveys() async {
+   await surveyService.getSurveyList().then((surveyList) {
       setState(() {
         _surveyList = surveyList;
       });
@@ -39,22 +37,23 @@ class _SurveyListScreen extends State<StatefulWidget> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Survey List'),
-        automaticallyImplyLeading: false,
-        actions: [
-          LogoutButton(onLogout: () {
-            Navigator.of(context).pushNamed('/loginScreen');
-          }),
-        ],
+        // automaticallyImplyLeading: false,
+        // actions: [
+        //   LogoutButton(onLogout: () {
+        //     Navigator.of(context).pushNamed('/loginScreen');
+        //   }),
+        // ],
       ),
       body: ListView.builder(
         itemCount: _surveyList.length,
         itemBuilder: (BuildContext context, int index) {
           Survey survey = _surveyList[index];
           return ListTile(
+            leading: Icon(Icons.assessment,size:50.0 ,),
             title: Text(survey.title),
             subtitle: Text(survey.description),
             onTap: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => SurveyDetailsScreen(survey: survey),
@@ -66,12 +65,9 @@ class _SurveyListScreen extends State<StatefulWidget> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    AddSurveyScreen(
-                    )),
+            MaterialPageRoute(builder: (context) => AddSurveyScreen()),
           );
         },
         child: Icon(Icons.add),
@@ -79,17 +75,3 @@ class _SurveyListScreen extends State<StatefulWidget> {
     );
   }
 }
-// @override
-// Widget build(BuildContext context) {
-//   return Scaffold(
-//     appBar: AppBar(
-//       title: Text('Surveys'),
-//     ),
-//     body: Container(
-//       child: Center(
-//         child: Text('Survey data will be displayed here'),
-//       ),
-//     ),
-//   );
-// }
-// }

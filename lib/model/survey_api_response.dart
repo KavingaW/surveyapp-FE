@@ -62,6 +62,13 @@ class Survey {
     required this.assigned,
   });
 
+  Survey.empty()
+      : id = '',
+        title = '',
+        description = '',
+        questions = [],
+        assigned = [];
+
   factory Survey.fromJson(Map<String, dynamic> json) {
     List<Question> questionList = [];
     if (json['questions'].toString() != "null") {
@@ -100,6 +107,8 @@ class Survey {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['title'] = survey.title;
     data['description'] = survey.description;
+    data['questions'] = survey.questions;
+    data['assigned'] = survey.assigned;
     return data;
   }
 }
@@ -128,7 +137,7 @@ class Question {
   }
 
   Map<String, dynamic> toJson() =>
-      {'text': text, 'type': type, 'options': options};
+      {'id':id,'text': text, 'type': type, 'options': options};
 
   Map<String, dynamic> questionToJson(Question question) {
     final Map<String, dynamic> data = Map<String, dynamic>();

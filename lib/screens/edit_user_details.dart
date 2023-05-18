@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:surveyapp/screens/user_dashboard.dart';
 import 'package:surveyapp/screens/users_list_screen.dart';
-
 import '../model/user_admin_response.dart';
 import '../service/user_service.dart';
 import '../utils/constants.dart';
 import '../widgets/delete_response_widget.dart';
 import '../widgets/delete_widget.dart';
 
-class UserUpdateScreen extends StatefulWidget {
-  final User user;
+class EditUserScreen extends StatefulWidget {
+  final String userId;
 
-  UserUpdateScreen({required this.user});
+  EditUserScreen({required this.userId});
 
   @override
-  UserUpdateScreenState createState() => UserUpdateScreenState();
+  EditUserScreenState createState() => EditUserScreenState();
 }
 
-class UserUpdateScreenState extends State<UserUpdateScreen> {
+class EditUserScreenState extends State<EditUserScreen> {
   final formKey = GlobalKey<FormState>();
   UserService userService = new UserService();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _userEmailController = TextEditingController();
+  late User _user = User.empty();
 
   String _username = '';
   String _email = '';
@@ -29,8 +29,7 @@ class UserUpdateScreenState extends State<UserUpdateScreen> {
   @override
   void initState() {
     super.initState();
-    _usernameController.text = widget.user.username;
-    _userEmailController.text = widget.user.email;
+    _loadUser();
   }
 
   @override
@@ -40,15 +39,24 @@ class UserUpdateScreenState extends State<UserUpdateScreen> {
     super.dispose();
   }
 
+  void _loadUser() async {
+    final user = await userService.getUserById(widget.userId);
+    setState(() {
+      _user = user;
+      _usernameController.text = _user.username;
+      _userEmailController.text = _user.email;
+    });
+  }
+
   _updateUser() async {
     if (formKey.currentState!.validate()) {
       User updatedUser = User(
-        id: widget.user.id,
+        id: widget.userId,
         username: _usernameController.text,
         email: _userEmailController.text,
       );
 
-      await userService.updateUser(widget.user.id, updatedUser);
+      return await userService.updateUser(widget.userId, updatedUser);
 
       // ScaffoldMessenger.of(context).showSnackBar(
       //   SnackBar(
@@ -67,34 +75,6 @@ class UserUpdateScreenState extends State<UserUpdateScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit User '),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => ConfirmationDialog(
-                  onConfirm: () async {
-                    await userService.deleteUser(widget.user.id);
-                    DeleteResponseMessage.show(
-                      context,
-                      '${widget.user.username} has been deleted successfully.',
-                    );
-                    Navigator.pop(context);
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UsersScreen(),
-                      ),
-                    );
-                  },
-                  operation: AppConstants.operationDelete,
-                  message: AppConstants.messageDelete,
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -173,25 +153,28 @@ class UserUpdateScreenState extends State<UserUpdateScreen> {
                 onPressed: () async {
                   showDialog(
                     context: context,
-                    builder: (_) => ConfirmationDialog(
-                      onConfirm: () async {
-                        //userService.deleteUser(TextFile.token, widget.user.id);
-                        await _updateUser();
-                        DeleteResponseMessage.show(
-                          context,
-                          'User ${widget.user.username} has been updated successfully.',
-                        );
-                        Navigator.pop(context);
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => UsersScreen(),
-                          ),
-                        );
-                      },
-                      operation: AppConstants.operationUpdate,
-                      message: AppConstants.messageUpdate,
-                    ),
+                    builder: (_) =>
+                        ConfirmationDialog(
+                          onConfirm: () async {
+                            //userService.deleteUser(TextFile.token, widget.user.id);
+                            await _updateUser();
+                            DeleteResponseMessage.show(
+                              context,
+                              'User has been updated successfully.',
+                            );
+
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            // Navigator.pushReplacement(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => UserDashboard(user:),
+                            //   ),
+                            // );
+                          },
+                          operation: AppConstants.operationUpdate,
+                          message: AppConstants.messageUpdate,
+                        ),
                   );
 
                   // List<User> userList = await userService.getUserList(TextFile.token);
