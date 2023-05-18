@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:surveyapp/helper/validator_helper.dart';
+import 'package:surveyapp/model/user_request.dart';
+import 'package:surveyapp/screens/users_list_screen.dart';
+
+import '../service/user_service.dart';
 
 class AddUser extends StatefulWidget {
+  const AddUser({super.key});
+
   @override
   AddUserState createState() => AddUserState();
 }
@@ -12,13 +16,13 @@ class AddUser extends StatefulWidget {
 class AddUserState extends State<AddUser> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  //final _userService = UserService();
-  // final _user = User();
+  final _userService = UserService();
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfirmController = TextEditingController();
+  final TextEditingController _passwordConfirmController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -83,13 +87,27 @@ class AddUserState extends State<AddUser> {
               SizedBox(height: 16.0),
               ElevatedButton(
                 child: const Text('Add User'),
-                onPressed: () {
-                  _formKey.currentState?.validate();
-                  // if (_formKey.currentState.validate()) {
-                  //   //_formKey.currentState.save();
-                  //   //_userService.addUser(_user);
+                onPressed: () async {
+                  // _formKey.currentState?.validate();
+                  // if (_formKey.currentState?.validate()) {
+                  //   _formKey.currentState.save();
+                  //   _userService.addUser(_user);
                   //   Navigator.pop(context);
                   // }
+
+                  Set<String> role = {'user'};
+                  var user = UserRequest(
+                      username: _usernameController.text,
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                      role: role);
+                  await _userService.addUser(user);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UsersScreen(),
+                    ),
+                  );
                 },
               ),
             ],

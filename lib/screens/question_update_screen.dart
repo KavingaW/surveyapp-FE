@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:surveyapp/screens/survey_details_screen.dart';
+import 'package:surveyapp/screens/surveys_list_screen.dart';
 import 'package:surveyapp/service/question_service.dart';
 import 'package:surveyapp/utils/constants.dart';
 import '../model/survey_api_response.dart';
@@ -172,6 +173,7 @@ class QuestionUpdateScreen extends StatefulWidget {
 // }
 
 class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
+  late Question _question;
   QuestionService questionService = QuestionService();
   late TextEditingController _textController;
   late String _questionType;
@@ -190,15 +192,14 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
     }
   }
 
-  void _updateQuestion() async {
+  Future<void> _updateQuestion() async {
     Question question = Question(
       id: widget.question.id,
       text: _textController.text,
       type: _questionType,
       options: _options,
     );
-
-    questionService.updateQuestion(TextFile.token, question.id, question);
+    questionService.updateQuestion(question.id, question);
   }
 
   @override
@@ -212,16 +213,24 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (_) => DeleteConfirmationDialog(
-                  onConfirm: () {
-                    questionService.deleteQuestion(
-                        TextFile.token, widget.question.id);
+                builder: (_) => ConfirmationDialog(
+                  onConfirm: () async {
+                    await questionService.deleteQuestion(widget.question.id);
                     DeleteResponseMessage.show(
                       context,
                       'Question has been deleted successfully.',
                     );
                     Navigator.pop(context);
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SurveyListScreen(),
+                      ),
+                      (route) => false,
+                    );
                   },
+                  operation: AppConstants.operationDelete,
+                  message: AppConstants.messageDelete,
                 ),
               );
             },
@@ -327,8 +336,36 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        // onPressed: () {
+        //   _updateQuestion();
+        //   Navigator.pushReplacement(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (context) => SurveyListScreen(),
+        //       ));
+        // },
         onPressed: () {
-          _updateQuestion();
+          showDialog(
+            context: context,
+            builder: (_) => ConfirmationDialog(
+              onConfirm: () async {
+                await _updateQuestion();
+                DeleteResponseMessage.show(
+                  context,
+                  'Question has been updated successfully.',
+                );
+                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SurveyListScreen(),
+                    ),
+                    (route) => false);
+              },
+              operation: AppConstants.operationUpdate,
+              message: AppConstants.messageUpdate,
+            ),
+          );
         },
         child: Icon(Icons.save),
       ),

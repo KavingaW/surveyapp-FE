@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:surveyapp/screens/survey_details_screen.dart';
 import 'package:surveyapp/service/survey_service.dart';
 
+import '../helper/validator_helper.dart';
 import '../model/survey_api_response.dart';
 import '../utils/constants.dart';
 
 class AddSurveyScreen extends StatefulWidget {
+  const AddSurveyScreen({super.key});
+
   @override
   _AddSurveyScreenState createState() => _AddSurveyScreenState();
 }
 
 class _AddSurveyScreenState extends State<AddSurveyScreen> {
-  SurveyService _surveyService = SurveyService();
+  final _surveyService = SurveyService();
   final _formKey = GlobalKey<FormState>();
   String _surveyTitle = '';
   String _surveyDescription = '';
@@ -20,7 +23,7 @@ class _AddSurveyScreenState extends State<AddSurveyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('New Survey'),
+        title: Text(AppConstants.surveyAddScreenTitle),
       ),
       body: Form(
         key: _formKey,
@@ -28,35 +31,29 @@ class _AddSurveyScreenState extends State<AddSurveyScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(
-              height: 20.0,
+              height: AppConstants.sizedBoxSizes,
             ),
             TextFormField(
-              scrollPadding: EdgeInsets.all(20.0),
+              scrollPadding: EdgeInsets.all(AppConstants.edgeInsetsValue),
               decoration: InputDecoration(
-                hintText: 'Enter survey title',
+                hintText: AppConstants.hintSurveyTitle,
               ),
               validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter survey title';
-                }
-                return null;
+                return HelperValidator.validateSurveyTitle(value!);
               },
               onSaved: (value) {
                 _surveyTitle = value!;
               },
             ),
             SizedBox(
-              height: 20.0,
+              height: AppConstants.sizedBoxSizes,
             ),
             TextFormField(
               decoration: InputDecoration(
-                hintText: 'Enter survey description',
+                hintText: AppConstants.hintSurveyDescription,
               ),
               validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter survey description';
-                }
-                return null;
+                return HelperValidator.validateSurveyDescription(value!);
               },
               onSaved: (value) {
                 _surveyDescription = value!;
@@ -74,13 +71,14 @@ class _AddSurveyScreenState extends State<AddSurveyScreen> {
                         description: _surveyDescription,
                         questions: [],
                         assigned: []);
-                    Survey _createdSurvey = await  _surveyService.addSurvey(TextFile.token, survey);
+                    Survey createdSurvey =
+                        await _surveyService.addSurvey(survey);
 
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              SurveyDetailsScreen(survey: _createdSurvey)),
+                              SurveyDetailsScreen(survey: createdSurvey)),
                     );
                   }
                 },

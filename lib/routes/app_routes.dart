@@ -10,10 +10,10 @@ import '../screens/users_list_screen.dart';
 
 Map<String, WidgetBuilder> appRoutes = {
   '/resetPassword': (context) => ResetPasswordScreen(),
-  //'/userDashboard': (context) =>
+  // '/userDashboard': (context) => UserDashboard
   '/userslist': (context) => UsersScreen(),
-  '/surveyslist': (context) => SurveyListScreen(),
-  '/resultslist': (context) => ResultsListScreen(),
+   '/surveyslist': (context) => SurveyListScreen(),
+   '/resultslist': (context) => ResultsListScreen(),
   '/adminDashboard': (context) => AdminDashboard(),
   '/loginScreen': (context) => LoginScreen(),
 };

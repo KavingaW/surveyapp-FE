@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:surveyapp/helper/validator_helper.dart';
 import 'package:surveyapp/screens/user_dashboard.dart';
 import 'package:surveyapp/service/auth_service.dart';
 
 import '../widgets/login_error.dart';
+import 'admin_dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -25,10 +27,17 @@ class _LoginScreenState extends State<LoginScreen> {
       try {
         final user = await authService.login(
             _usernameController.text, _passwordController.text);
+
+        print(user.role);
         if (user.role == 'ROLE_ADMIN') {
-          Navigator.of(context).pushNamed('/adminDashboard');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AdminDashboard(),
+            ),
+          );
         }else if(user.role == "ROLE_USER"){
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => UserDashboard(user: user),

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:surveyapp/screens/login_screen.dart';
+import 'package:surveyapp/service/auth_service.dart';
 
+import '../utils/constants.dart';
+import '../widgets/delete_response_widget.dart';
+import '../widgets/delete_widget.dart';
 import '../widgets/logout_widget.dart';
 
 // import 'package:my_app/screens/user_screen.dart';
@@ -17,7 +22,25 @@ class AdminDashboard extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: [
           LogoutButton(onLogout: () {
-            Navigator.of(context).pushNamed('/loginScreen');
+            showDialog(
+              context: context,
+              builder: (_) => ConfirmationDialog(
+                onConfirm: () async {
+                  //userService.deleteUser(TextFile.token, widget.user.id);
+                  DeleteResponseMessage.show(
+                    context,
+                    'Successfully logged out.',
+                  );
+
+                  Navigator.pop(context);
+                  AuthService authService = AuthService();
+                  authService.logOut();
+                  Navigator.pushReplacementNamed(context, '/loginScreen');
+                },
+                operation: AppConstants.operationLogout,
+                message: AppConstants.messageLogout,
+              ),
+            );
           }),
         ],
       ),
