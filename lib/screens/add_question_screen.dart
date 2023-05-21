@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:surveyapp/helper/validator_helper.dart';
-import 'package:surveyapp/model/survey_api_response.dart';
+import 'package:surveyapp/model/survey_api_model.dart';
 import 'package:surveyapp/screens/survey_details_screen.dart';
 import 'package:surveyapp/service/question_service.dart';
 import 'package:surveyapp/utils/constants.dart';
-
-import '../service/survey_service.dart';
-import '../utils/app_icons.dart';
 
 class QuestionAddScreen extends StatefulWidget {
   final Survey survey;
@@ -35,25 +32,25 @@ class _QuestionAddScreenState extends State<QuestionAddScreen> {
     }
   }
 
-  void _addOption() {
+  void addOption() {
     setState(() {
       _options.add('');
     });
   }
 
-  void _deleteOption(int index) {
+  void deleteOption(int index) {
     setState(() {
       _options.removeAt(index);
     });
   }
 
-  void _updateOption(int index, String value) {
+  void updateOption(int index, String value) {
     setState(() {
       _options[index] = value;
     });
   }
 
-  void _submitForm() async {
+  void submitForm() async {
     if (_formKey.currentState!.validate()) {
       final question = Question(
         text: _textController.text,
@@ -63,8 +60,7 @@ class _QuestionAddScreenState extends State<QuestionAddScreen> {
       );
       final survey = widget.survey
           .copyWith(questions: [...widget.survey.questions, question]);
-     await _questionService.addQuestion(survey.id, question);
-      //await SurveyService().updateSurvey(survey);
+      await _questionService.addQuestion(survey.id, question);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -98,7 +94,7 @@ class _QuestionAddScreenState extends State<QuestionAddScreen> {
                   return HelperValidator.validateQuestionText(value!);
                 },
               ),
-              SizedBox(height: AppConstants.sizedBoxSizes),
+              SizedBox(height: AppConstants.sizedBoxSizesHeight),
               DropdownButtonFormField(
                 value: _questionType,
                 items: [
@@ -130,7 +126,7 @@ class _QuestionAddScreenState extends State<QuestionAddScreen> {
                   });
                 },
               ),
-              SizedBox(height: AppConstants.sizedBoxSizes),
+              SizedBox(height: AppConstants.sizedBoxSizesHeight),
               Text(AppConstants.optionLabelText),
               ..._options.asMap().entries.map((entry) {
                 final index = entry.key;
@@ -146,29 +142,29 @@ class _QuestionAddScreenState extends State<QuestionAddScreen> {
                         validator: (value) {
                           return HelperValidator.validateOption(value!);
                         },
-                        onChanged: (value) => _updateOption(index, value),
+                        onChanged: (value) => updateOption(index, value),
                       ),
                     ),
                     if (!_disableAddOptionButton &&
                         index == _options.length - 1)
                       IconButton(
                         icon: Icon(Icons.delete),
-                        onPressed: () => _deleteOption(index),
+                        onPressed: () => deleteOption(index),
                       ),
                   ],
                 );
               }),
-              SizedBox(height: AppConstants.sizedBoxSizes),
+              SizedBox(height: AppConstants.sizedBoxSizesHeight),
               Center(
                 child: ElevatedButton(
-                  onPressed: !_disableAddOptionButton ? _addOption : null,
+                  onPressed: !_disableAddOptionButton ? addOption : null,
                   child: Text(AppConstants.optionAddTitle),
                 ),
               ),
-              SizedBox(height: AppConstants.sizedBoxSizes),
+              SizedBox(height: AppConstants.sizedBoxSizesHeight),
               Center(
                 child: ElevatedButton(
-                  onPressed: _submitForm,
+                  onPressed: submitForm,
                   child: Text(AppConstants.questionAddTitle),
                 ),
               ),

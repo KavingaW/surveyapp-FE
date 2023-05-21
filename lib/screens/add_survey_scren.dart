@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:surveyapp/screens/survey_details_screen.dart';
 import 'package:surveyapp/service/survey_service.dart';
-
 import '../helper/validator_helper.dart';
-import '../model/survey_api_response.dart';
+import '../model/survey_api_model.dart';
 import '../utils/constants.dart';
 
 class AddSurveyScreen extends StatefulWidget {
@@ -28,15 +27,16 @@ class _AddSurveyScreenState extends State<AddSurveyScreen> {
       body: Form(
         key: _formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children:[
             SizedBox(
-              height: AppConstants.sizedBoxSizes,
+              height: AppConstants.sizedBoxSizesHeight,
             ),
             TextFormField(
               scrollPadding: EdgeInsets.all(AppConstants.edgeInsetsValue),
               decoration: InputDecoration(
                 hintText: AppConstants.hintSurveyTitle,
+                border: OutlineInputBorder(),
               ),
               validator: (value) {
                 return HelperValidator.validateSurveyTitle(value!);
@@ -46,7 +46,7 @@ class _AddSurveyScreenState extends State<AddSurveyScreen> {
               },
             ),
             SizedBox(
-              height: AppConstants.sizedBoxSizes,
+              height: AppConstants.sizedBoxSizesHeight,
             ),
             TextFormField(
               decoration: InputDecoration(
@@ -73,7 +73,6 @@ class _AddSurveyScreenState extends State<AddSurveyScreen> {
                         assigned: []);
                     Survey createdSurvey =
                         await _surveyService.addSurvey(survey);
-
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -82,7 +81,7 @@ class _AddSurveyScreenState extends State<AddSurveyScreen> {
                     );
                   }
                 },
-                child: Text('Save'),
+                child: Text(AppConstants.addSurvey),
               ),
             ),
           ],

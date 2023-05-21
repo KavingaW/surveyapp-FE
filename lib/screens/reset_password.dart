@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:surveyapp/helper/validator_helper.dart';
+import 'package:surveyapp/model/user_admin_response_model.dart';
+import 'package:surveyapp/utils/constants.dart';
+
+import '../model/user_request_model.dart';
+import '../service/user_service.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   @override
@@ -9,8 +14,7 @@ class ResetPasswordScreen extends StatefulWidget {
 class ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  //String _email, _password, _confirmPassword;
-
+  final _userService = UserService();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -21,40 +25,43 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reset Password'),
+        title: Text(AppConstants.resetPasswordTitle),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(AppConstants.edgeInsetsValue),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                SizedBox(height: 16.0),
+                SizedBox(height: AppConstants.sizedBoxSizesHeight),
                 TextFormField(
                   controller: _usernameController,
                   keyboardType: TextInputType.text,
-                  decoration: InputDecoration(labelText: 'Username'),
+                  decoration: InputDecoration(
+                      labelText: AppConstants.labelTextUserName),
                   validator: (value) {
-                   return HelperValidator.nameValidate(value!);
+                    return HelperValidator.nameValidate(value!);
                   },
                 ),
                 SizedBox(height: 16.0),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(labelText: 'Email'),
+                  decoration:
+                      InputDecoration(labelText: AppConstants.labelEmail),
                   validator: (value) {
                     return HelperValidator.emailValidate(value!);
                   },
                 ),
-                SizedBox(height: 16.0),
+                SizedBox(height: AppConstants.sizedBoxSizesHeight),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(labelText: 'New Password'),
+                  decoration:
+                      InputDecoration(labelText: AppConstants.newPasswordLabel),
                   validator: (value) {
                     return HelperValidator.passwordValidate(value!);
                   },
@@ -63,22 +70,28 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 TextFormField(
                   controller: _passwordConfirmController,
                   obscureText: true,
-                  decoration: InputDecoration(labelText: 'Confirm Password'),
+                  decoration: InputDecoration(
+                      labelText: AppConstants.labelConfirmPassword),
                   validator: (value) {
                     return HelperValidator.validatePasswordMatch(
                         value, _passwordController.text);
                   },
                 ),
-                SizedBox(height: 32.0),
+                SizedBox(height: AppConstants.sizedBoxSizesHeight),
                 ElevatedButton(
-                  child: const Text('Reset Password'),
+                  child: Text(AppConstants.resetPasswordTitle),
                   onPressed: () {
                     _formKey.currentState?.validate();
-                    // if (_formKey.currentState.validate()) {
-                    //   //_formKey.currentState.save();
-                    //   //_userService.addUser(_user);
-                    //   Navigator.pop(context);
-                    // }
+                    if (_formKey.currentState!.validate()) {
+                      Set<String> role = {};
+                      UserRequest user = UserRequest(
+                          username: _usernameController.text,
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                          role: role);
+                      _userService.resetUserPassword(user);
+                      Navigator.pop(context);
+                    }
                   },
                 ),
               ],
@@ -87,19 +100,5 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
       ),
     );
-  }
-
-  bool isValidEmail(String input) {
-    // validate email pattern using a regular expression
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    return emailRegex.hasMatch(input);
-  }
-
-  void resetPassword() {
-    final formState = _formKey.currentState;
-    // if (formState.validate()) {
-    //   formState.save();
-    //   // call a reset password service with _email and _password fields
-    // }
   }
 }

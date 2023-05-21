@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:surveyapp/routes/app_routes.dart';
-import 'package:surveyapp/screens/add_user.dart';
-import 'package:surveyapp/screens/admin_dashboard.dart';
+import 'package:surveyapp/screens/add_user_screen.dart';
+import 'package:surveyapp/screens/admin_dashboard_screen.dart';
 import 'package:surveyapp/screens/login_screen.dart';
 import 'package:surveyapp/screens/reset_password.dart';
 import 'package:surveyapp/screens/results_list_screen.dart';

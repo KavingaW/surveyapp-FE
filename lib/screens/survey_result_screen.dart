@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:surveyapp/service/survey_result_service.dart';
+import 'package:surveyapp/utils/constants.dart';
 import '../model/survey_result.dart';
 
 class SurveyResultScreen extends StatefulWidget {
@@ -14,33 +16,23 @@ class SurveyResultScreen extends StatefulWidget {
 }
 
 class _SurveyResultScreenState extends State<SurveyResultScreen> {
-  late Future<SurveyResultResponse> surveyResponse;
+  late Future<SurveyResultResponse> _surveyResponse;
+  final _surveyResultService = SurveyResultService();
 
   @override
   void initState() {
     super.initState();
-    surveyResponse = _fetchSurveyResults();
-  }
-
-  Future<SurveyResultResponse> _fetchSurveyResults() async {
-    final response = await http.get(Uri.parse(
-        'http://10.0.2.2:8080/api/survey-result/submitted/${widget.surveyId}/${widget.userId}'));
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-      return SurveyResultResponse.fromJson(jsonData);
-    } else {
-      throw Exception("Error on fetching data");
-    }
+    _surveyResponse = _surveyResultService.fetchSurveyResults(widget.surveyId, widget.userId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Survey Response Details'),
+        title: Text(AppConstants.surveyResponseDetails),
       ),
       body: FutureBuilder<SurveyResultResponse>(
-        future: surveyResponse,
+        future: _surveyResponse,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final surveyData = snapshot.data!;
@@ -51,25 +43,25 @@ class _SurveyResultScreenState extends State<SurveyResultScreen> {
                 children: [
                   Text(
                     'Survey Name: ${surveyData.surveyName}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     'Survey Description: ${surveyData.surveyDescription}',
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
-                  SizedBox(height: 20),
-                  Text(
+                  const SizedBox(height: 20),
+                  const Text(
                     'Question Responses:',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   ListView.builder(
                     shrinkWrap: true,
                     itemCount: surveyData.questionMap.length,
@@ -86,7 +78,7 @@ class _SurveyResultScreenState extends State<SurveyResultScreen> {
                       );
                     },
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     'Number of Answers: ${surveyData.numberOfAnswers}',
                     style: TextStyle(fontSize: 16),
@@ -99,7 +91,7 @@ class _SurveyResultScreenState extends State<SurveyResultScreen> {
               child: Text('Error: ${snapshot.error}'),
             );
           } else {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }

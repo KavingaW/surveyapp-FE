@@ -1,15 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:surveyapp/helper/validator_helper.dart';
 import 'package:surveyapp/screens/user_dashboard.dart';
 import 'package:surveyapp/service/auth_service.dart';
 
+import '../utils/constants.dart';
 import '../widgets/login_error.dart';
-import 'admin_dashboard.dart';
+import 'admin_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -17,26 +19,25 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final authService = AuthService();
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  String _errorMessage='';
-  void _login() async {
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String _errorMessage = '';
+
+  void login() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
 
       try {
         final user = await authService.login(
             _usernameController.text, _passwordController.text);
-
-        print(user.role);
-        if (user.role == 'ROLE_ADMIN') {
+        if (user.role == AppConstants.adminRole) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => AdminDashboard(),
             ),
           );
-        }else if(user.role == "ROLE_USER"){
+        } else if (user.role == AppConstants.userRole) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -44,12 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         }
-        // TODO: Navigate to the home screen
       } catch (e) {
         setState(() {
           _errorMessage = 'Login Failed';
         });
-        Timer(Duration(seconds: 2), () {
+        Timer(const Duration(seconds: 2), () {
           setState(() {
             _usernameController.clear();
             _passwordController.clear();
@@ -64,50 +64,50 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(AppConstants.edgeInsetsValue),
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Center(
+              const Center(
                   child: Text('Survey APP',
                       style: TextStyle(
                           fontStyle: FontStyle.italic,
                           height: 5,
                           fontSize: 20))),
-              Center(
+              const Center(
                   child: Icon(
                 Icons.assessment,
                 size: 100.0,
                 color: Colors.cyan,
               )),
-              SizedBox(height: 16.0),
+              SizedBox(height: AppConstants.sizedBoxSizesHeight),
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
-                  labelText: 'Username',
-                  hintText: 'Enter your username',
-                  border: OutlineInputBorder(),
+                  labelText: AppConstants.labelTextUserName,
+                  hintText: AppConstants.userNameHint,
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
                   return HelperValidator.nameValidate(value!);
                 },
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: AppConstants.sizedBoxSizesHeight),
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'Enter your password',
-                  border: OutlineInputBorder(),
+                  labelText: AppConstants.labelPassword,
+                  hintText: AppConstants.passwordHint,
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
                   return HelperValidator.passwordValidate(value!);
                 },
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: AppConstants.sizedBoxSizesHeight),
               if (_errorMessage.isNotEmpty)
                 LoginErrorWidget(errorMessage: _errorMessage),
               Column(
@@ -115,23 +115,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      // if(_formKey.currentState!.validate()){
-                      //   var role = authService.login(
-                      //     _usernameController.text, _passwordController.text);
-                      //   print('ko'+role.toString());
-                      // if(role.toString() ==  'ROLE_ADMIN'){
-                      //   Navigator.of(context).pushNamed('/adminDashboard');
-                      // }
-                      // }
-                      _login();
+                      login();
                     },
-                    child: Text('Log in'),
+                    child: Text(AppConstants.logIn),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pushNamed('/resetPassword');
                     },
-                    child: Text('Forgot password?'),
+                    child: Text(AppConstants.forgotPassword),
                   ),
                 ],
               ),

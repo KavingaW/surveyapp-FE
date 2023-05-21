@@ -1,27 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:surveyapp/model/user_token_response.dart';
+import 'package:surveyapp/model/user_token_response_model.dart';
 import 'package:surveyapp/screens/survey_result_screen.dart';
 import 'package:surveyapp/screens/survey_screen.dart';
-import 'package:surveyapp/screens/user_update_screen.dart';
 import 'package:surveyapp/service/auth_service.dart';
 import 'package:surveyapp/service/survey_result_service.dart';
 import 'package:surveyapp/service/survey_service.dart';
-
-import '../model/survey_api_response.dart';
-
-import 'package:flutter/material.dart';
-
-import '../service/test_service.dart';
+import '../model/survey_api_model.dart';
 import '../utils/constants.dart';
-import '../widgets/delete_response_widget.dart';
-import '../widgets/delete_widget.dart';
-import 'edit_user_details.dart';
+import '../widgets/confirmation_response_widget.dart';
+import '../widgets/confirmation_widget.dart';
+import 'user_self_update_screen.dart';
 
 class UserDashboard extends StatefulWidget {
   final User user;
 
-  UserDashboard({required this.user});
+  UserDashboard({super.key, required this.user});
 
   @override
   _UserDashboardState createState() => _UserDashboardState();
@@ -37,17 +30,17 @@ class _UserDashboardState extends State<UserDashboard> {
   @override
   void initState() {
     super.initState();
-    _loadSurveys();
+    loadSurveys();
   }
 
-  void _loadSurveys() async {
+  loadSurveys() async {
     final assignedSurveys =
         await _surveyService.getUserAssignedSurveyList(widget.user.id);
 
     final completedSurveys =
         await _surveyResultService.getUserCompletedSurveyList(widget.user.id);
 
-    setState(() {
+    setState((){
       // Filter out surveys that are in both lists
       _assignedSurveys = assignedSurveys
           .where((assignedSurvey) => completedSurveys.every((completedSurvey) =>
@@ -57,20 +50,22 @@ class _UserDashboardState extends State<UserDashboard> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Dashboard'),
+        title: const Text('User Dashboard'),
         actions: [
           PopupMenuButton(
-            icon: Icon(Icons.person),
+            icon: const Icon(Icons.person),
             itemBuilder: (context) => [
-              PopupMenuItem(
+              const PopupMenuItem(
                 value: 'update',
-                child: Text('Update'),
+                child: Text('Update Profile'),
               ),
-              PopupMenuItem(
+              const PopupMenuItem(
                 value: 'logout',
                 child: Text('Logout'),
               ),
@@ -91,7 +86,7 @@ class _UserDashboardState extends State<UserDashboard> {
                   builder: (_) => ConfirmationDialog(
                     onConfirm: () async {
                       //userService.deleteUser(TextFile.token, widget.user.id);
-                      DeleteResponseMessage.show(
+                      ConfirmationResponseMessage.show(
                         context,
                         'Successfully logged out.',
                       );
@@ -113,7 +108,7 @@ class _UserDashboardState extends State<UserDashboard> {
         length: 2,
         child: Column(
           children: [
-            TabBar(
+            const TabBar(
               labelColor: Colors.black,
               indicatorColor: Colors.blue,
               indicatorWeight: 4.0,
@@ -127,8 +122,14 @@ class _UserDashboardState extends State<UserDashboard> {
             Expanded(
               child: TabBarView(
                 children: [
-                  // Assigned Surveys Tab
-                  ListView.builder(
+                  _assignedSurveys.isEmpty
+                      ? const Center(
+                    child: Text(
+                      'No Assigned Surveys',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
+                  :ListView.builder(
                     itemCount: _assignedSurveys.length,
                     itemBuilder: (context, index) {
                       return Card(
@@ -136,8 +137,8 @@ class _UserDashboardState extends State<UserDashboard> {
                           title: Text(_assignedSurveys[index].title),
                           subtitle: Text(_assignedSurveys[index].description),
                           trailing: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
+                            onPressed: () async {
+                              Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                   builder: (context) => SurveyScreen(
                                     survey: _assignedSurveys[index],
@@ -145,14 +146,8 @@ class _UserDashboardState extends State<UserDashboard> {
                                   ),
                                 ),
                               );
-                              // Navigator.of(context).push(
-                              //   MaterialPageRoute(
-                              //     builder: (context) => SurveyForm(
-                              //         questions: _assignedSurveys[index].questions),
-                              //   ),
-                              // );
                             },
-                            child: Text('Take Survey'),
+                            child: const Text('Take Survey'),
                           ),
                         ),
                       );
@@ -160,7 +155,14 @@ class _UserDashboardState extends State<UserDashboard> {
                   ),
 
                   // Completed Surveys Tab
-                  ListView.builder(
+                  _completedSurveys.isEmpty
+                      ? const Center(
+                    child: Text(
+                      'No Completed Surveys',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
+                  :ListView.builder(
                     itemCount: _completedSurveys.length,
                     itemBuilder: (context, index) {
                       return Card(
@@ -171,23 +173,6 @@ class _UserDashboardState extends State<UserDashboard> {
                             onPressed: () {
                               _surveyResultService
                                   .getUserCompletedSurveyList(widget.user.id);
-
-                              // Navigator.pushNamed(
-                              //   context,
-                              //   '/survey-results',
-                              //   arguments: _completedSurveys[index],
-                              // );
-
-                              // final List<Map<String, dynamic>> surveyResultList
-                              // =fetchSurveyResults(_completedSurveys[index].id,widget.user.id);
-                              // Navigator.of(context).push(
-                              //   MaterialPageRoute(
-                              //       builder: (context) => SurveyResultScreen(
-                              //           surveyResultList: surveyResultList,
-                              //           respondents: 5,
-                              //           surveyId: _completedSurveys[index].id,
-                              //           userId: widget.user.id)),
-                              // );
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -198,7 +183,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                 ),
                               );
                             },
-                            child: Text('View Answers'),
+                            child: const Text('View Answers'),
                           ),
                         ),
                       );
@@ -213,108 +198,3 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-// import '../model/survey_api_response.dart';
-// import '../service/survey_service.dart';
-//
-// class UserDashboard extends StatefulWidget {
-//   final User user;
-//
-//   UserDashboard({required this.user});
-//
-//   @override
-//   _UserDashboardState createState() => _UserDashboardState();
-// }
-//
-// class _UserDashboardState extends State<UserDashboard> {
-//   final _surveyService = SurveyService();
-//   final _surveyResulService = SurveyResultService();
-//   List<Survey> _assignedSurveys = [];
-//   List<Survey> _completedSurveys = [];
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadSurveys();
-//   }
-//
-//   void _loadSurveys() async {
-//     final assignedSurveys =
-//         await _surveyService.getUserAssignedSurveyList(widget.user.id);
-//     final completedSurveys =
-//         await _surveyResulService.getUserCompletedSurveyList(widget.user.id);
-//
-//     setState(() {
-//       // Filter out surveys that are in both lists
-//       _completedSurveys = completedSurveys
-//           .where((completedSurvey) => assignedSurveys.every(
-//               (assignedSurvey) => assignedSurvey.id != completedSurvey.id))
-//           .toList();
-//
-//       _assignedSurveys = assignedSurveys;
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('User Dashboard'),
-//       ),
-//       body: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Text(
-//               'Assigned Surveys',
-//               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//             ),
-//           ),
-//           Expanded(
-//             child: Padding(
-//               padding: const EdgeInsets.all(8.0),
-//               child: ListView.builder(
-//                 itemCount: _assignedSurveys.length,
-//                 itemBuilder: (context, index) {
-//                   return Card(
-//                     margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-//                     child: ListTile(
-//                       title: Text(_assignedSurveys[index].title),
-//                       subtitle: Text('Assigned'),
-//                     ),
-//                   );
-//                 },
-//               ),
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Text(
-//               'Completed Surveys',
-//               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//             ),
-//           ),
-//           Expanded(
-//             child: Padding(
-//               padding: const EdgeInsets.all(8.0),
-//               child: ListView.builder(
-//                 itemCount: _completedSurveys.length,
-//                 itemBuilder: (context, index) {
-//                   return Card(
-//                     margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-//                     child: ListTile(
-//                       title: Text(_completedSurveys[index].title),
-//                       subtitle: Text('Completed'),
-//                     ),
-//                   );
-//                 },
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

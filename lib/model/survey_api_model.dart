@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-//import 'package:surveyapp/model/question_api_response.dart';
+import 'package:surveyapp/model/user_admin_response_model.dart';
+
+//import 'package:surveyapp/model/question_api_model.dart';
 
 // class Survey {
 //   final String id;
@@ -52,7 +54,7 @@ class Survey {
   String title;
   String description;
   List<Question> questions;
-  List<String> assigned;
+  List<User> assigned;
 
   Survey({
     required this.id,
@@ -71,10 +73,17 @@ class Survey {
 
   factory Survey.fromJson(Map<String, dynamic> json) {
     List<Question> questionList = [];
+    List<User> userList = [];
     if (json['questions'].toString() != "null") {
       var questions = json['questions'] as List;
       questionList = questions
           .map((questionJson) => Question.fromJson(questionJson))
+          .toList();
+    }
+    if (json['assigned'].toString() != "null") {
+      var users = json['assigned'] as List;
+      userList = users
+          .map((userJson) => User.fromJson(userJson))
           .toList();
     }
 
@@ -83,7 +92,7 @@ class Survey {
       title: json['title'],
       description: json['description'],
       questions: questionList,
-      assigned: json['assigned'].cast<String>(),
+      assigned: userList,
     );
   }
 
@@ -92,7 +101,7 @@ class Survey {
     String? title,
     String? description,
     List<Question>? questions,
-    List<String>? assigned,
+    List<User>? assigned,
   }) {
     return Survey(
       id: id ?? this.id,

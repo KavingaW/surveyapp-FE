@@ -1,4 +1,4 @@
-import 'package:surveyapp/model/results_api_response.dart';
+import 'package:surveyapp/model/result_api_model.dart';
 
 class SurveyListResult{
 

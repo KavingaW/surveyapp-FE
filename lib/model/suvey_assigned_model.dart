@@ -1,8 +1,8 @@
 
 
 
-import 'package:surveyapp/model/survey_api_response.dart';
-import 'package:surveyapp/model/user_admin_response.dart';
+import 'package:surveyapp/model/survey_api_model.dart';
+import 'package:surveyapp/model/user_admin_response_model.dart';
 
 class SurveyAssignedUsers {
   String id;

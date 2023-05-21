@@ -21,8 +21,12 @@ class SurveyResult{
   // }
 
   factory SurveyResult.fromJson(Map<String, dynamic> json) {
-    final questionMap = (json['questionMap'] as Map<String, dynamic>)
-        .map((key, value) => MapEntry(key, value.toString()));
+    var questionMap;
+    if(json['questionMap'].toString() != "null"){
+      questionMap = (json['questionMap'] as Map<String, dynamic>)
+          .map((key, value) => MapEntry(key, value.toString()));
+    }
+
     return SurveyResult(
       userId: json['userId'].toString(),
       surveyId: json['surveyId'].toString(),

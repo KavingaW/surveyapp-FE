@@ -1,32 +1,35 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:surveyapp/service/service_constants.dart';
 import 'package:surveyapp/utils/constants.dart';
 
-import '../model/user_token_response.dart';
+import '../interceptor/request_interceptor.dart';
+import '../model/user_token_response_model.dart';
 
 class AuthService {
+  String authServiceUrl = ServiceConstants.AUTH_SERVICE_URL;
 
-  String? baseUrl = dotenv.env['AUTH_BASE_URL'];
+  Future<SharedPreferences> getSharedPreferences() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return preferences;
+  }
 
   Future<User> login(String username, String password) async {
-    final body = json.encode({'username': username, 'password': password});
-    final headers = {'Content-Type': 'application/json'};
+    final preferences = await getSharedPreferences();
+    final client = AuthInterceptor(http.Client(), preferences);
 
-    final response = await http.post(Uri.parse('$baseUrl/signin'),
-        headers: headers, body: body);
+    final body = json.encode({'username': username, 'password': password});
+
+    final response =
+        await client.post(Uri.parse('$authServiceUrl/signin'), body: body);
 
     if (response.statusCode == 200) {
       SharedPreferences preferences = await SharedPreferences.getInstance();
-
       final jsonResponse = json.decode(response.body);
       final user = User.fromJson(jsonResponse);
-
       var accessToken = user.accessToken;
-      print(accessToken);
       preferences.setString(AppConstants.token, accessToken);
-
       return user;
     } else {
       throw Exception('Failed to login');
@@ -34,19 +37,13 @@ class AuthService {
   }
 
   Future<String> deleteUser(String userId) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    var token = preferences.getString(AppConstants.token);
+    final preferences = await getSharedPreferences();
+    final client = AuthInterceptor(http.Client(), preferences);
 
-    final response = await http.delete(
-      Uri.parse('$baseUrl/$userId'),
-      headers: <String, String>{
-        'Authorization': 'Bearer $token',
-      },
+    final response = await client.delete(
+      Uri.parse('$authServiceUrl/$userId'),
     );
     if (response.statusCode == 200) {
-      // var jsonData = jsonDecode(response.body) as List;
-      // List<User> userList = jsonData.map((e) => User.fromJson(e)).toList();
-
       String deleted = 'deleted';
       return deleted;
     } else {
@@ -54,7 +51,7 @@ class AuthService {
     }
   }
 
-  Future<void> logOut()async {
+  Future<void> logOut() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.clear();
   }

@@ -1,180 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:surveyapp/screens/survey_details_screen.dart';
+
 import 'package:surveyapp/screens/surveys_list_screen.dart';
 import 'package:surveyapp/service/question_service.dart';
 import 'package:surveyapp/utils/constants.dart';
-import '../model/survey_api_response.dart';
-import '../widgets/delete_response_widget.dart';
-import '../widgets/delete_widget.dart';
-
-// class QuestionUpdateScreen extends StatefulWidget {
-//   final Question question;
-//
-//   QuestionUpdateScreen({required this.question});
-//
-//   @override
-//   _QuestionUpdateScreenState createState() => _QuestionUpdateScreenState();
-// }
-//
-// class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Update Question'),
-//       ),
-//     );
-//   }
-// }
+import '../model/survey_api_model.dart';
+import '../widgets/confirmation_response_widget.dart';
+import '../widgets/confirmation_widget.dart';
 
 class QuestionUpdateScreen extends StatefulWidget {
   final Question question;
 
-  QuestionUpdateScreen({required this.question});
+  QuestionUpdateScreen({super.key, required this.question});
 
   @override
   _QuestionUpdateScreenState createState() => _QuestionUpdateScreenState();
 }
 
-// class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
-//   QuestionService questionService = QuestionService();
-//   late TextEditingController _textController;
-//   late String _questionType;
-//   late List<String> _options;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _textController = TextEditingController(text: widget.question.text);
-//     _questionType = widget.question.type;
-//     _options = List<String>.from(widget.question.options);
-//     if (_questionType == 'YES/NO') {
-//       _options = ['Yes', 'No'];
-//     }
-//   }
-//
-//   void _updateQuestion() async {
-//     Question question = Question(
-//       id: widget.question.id,
-//       text: _textController.text,
-//       type: _questionType,
-//       options: _options,
-//     );
-//
-//     questionService.updateQuestion(TextFile.token,question.id,question);
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Edit Question'),
-//       ),
-//       body: Column(
-//         crossAxisAlignment: CrossAxisAlignment.stretch,
-//         children: [
-//           SizedBox(height: 16),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//             child: TextField(
-//               controller: _textController,
-//               decoration: InputDecoration(
-//                 labelText: 'Question',
-//               ),
-//             ),
-//           ),
-//           SizedBox(height: 16),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//             child: DropdownButtonFormField<String>(
-//               value: _questionType,
-//               onChanged: (String? newValue) {
-//                 setState(() {
-//                   _questionType = newValue!;
-//                 });
-//               },
-//               items: <String>[
-//                 'MCQ',
-//                 'YES/NO',
-//               ].map<DropdownMenuItem<String>>((String value) {
-//                 return DropdownMenuItem<String>(
-//                   value: value,
-//                   child: Text(value),
-//                 );
-//               }).toList(),
-//               decoration: InputDecoration(
-//                 labelText: 'Question Type',
-//               ),
-//             ),
-//           ),
-//           SizedBox(height: 16),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Text(
-//                   'Options',
-//                   style: TextStyle(
-//                     fontSize: 18,
-//                     fontWeight: FontWeight.bold,
-//                   ),
-//                 ),
-//                 SizedBox(height: 8),
-//                 ..._options.map((option) {
-//                   return Row(
-//                     children: [
-//                       Expanded(
-//                         child: TextField(
-//                           controller: TextEditingController(text: option),
-//                           onChanged: (value) {
-//                             // _options[_options.indexOf(option)] = value;
-//                             if(_questionType == 'YES/NO'){
-//                               _options = ['Yes','No'];
-//                             }else{
-//                               _options=[];
-//                             }
-//                           },
-//                         ),
-//                       ),
-//                       IconButton(
-//                         icon: Icon(Icons.delete),
-//                         onPressed: () {
-//                           setState(() {
-//                             _options.remove(option);
-//                           });
-//                         },
-//                       ),
-//                     ],
-//                   );
-//                 }),
-//                 SizedBox(height: 8),
-//                 ElevatedButton(
-//                   onPressed: () {
-//                     setState(() {
-//                       _options.add('');
-//                     });
-//                   },
-//                   child: Text('Add More Option'),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: (){
-//           _updateQuestion();
-//         },
-//         child: Icon(Icons.save),
-//       ),
-//     );
-//   }
-// }
-
 class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
   late Question _question;
-  QuestionService questionService = QuestionService();
+  final _questionService = QuestionService();
   late TextEditingController _textController;
   late String _questionType;
   late List<String> _options;
@@ -186,37 +30,37 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
     _textController = TextEditingController(text: widget.question.text);
     _questionType = widget.question.type;
     _options = List<String>.from(widget.question.options);
-    _canAddMoreOptions = _questionType != 'YES/NO';
-    if (_questionType == 'YES/NO') {
-      _options = ['Yes', 'No'];
+    _canAddMoreOptions = _questionType != AppConstants.questionTypeYesNo;
+    if (_questionType == AppConstants.questionTypeYesNo) {
+      _options = [AppConstants.questionTypeYes, AppConstants.questionTypeNo];
     }
   }
 
-  Future<void> _updateQuestion() async {
+  Future<void> updateQuestion() async {
     Question question = Question(
       id: widget.question.id,
       text: _textController.text,
       type: _questionType,
       options: _options,
     );
-    questionService.updateQuestion(question.id, question);
+    _questionService.updateQuestion(question.id, question);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Question'),
+        title: Text(AppConstants.updateQuestion),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (_) => ConfirmationDialog(
                   onConfirm: () async {
-                    await questionService.deleteQuestion(widget.question.id);
-                    DeleteResponseMessage.show(
+                    await _questionService.deleteQuestion(widget.question.id);
+                    ConfirmationResponseMessage.show(
                       context,
                       'Question has been deleted successfully.',
                     );
@@ -241,17 +85,17 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 16),
+            SizedBox(height: AppConstants.sizedBoxSizesHeight),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: TextField(
                 controller: _textController,
                 decoration: InputDecoration(
-                  labelText: 'Question',
+                  labelText: AppConstants.questionLabelText,
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: AppConstants.sizedBoxSizesHeight),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: DropdownButtonFormField<String>(
@@ -259,9 +103,13 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
                 onChanged: (String? newValue) {
                   setState(() {
                     _questionType = newValue!;
-                    _canAddMoreOptions = _questionType != 'YES/NO';
-                    if (_questionType == 'YES/NO') {
-                      _options = ['Yes', 'No'];
+                    _canAddMoreOptions =
+                        _questionType != AppConstants.questionTypeYesNo;
+                    if (_questionType == AppConstants.questionTypeYesNo) {
+                      _options = [
+                        AppConstants.questionTypeYes,
+                        AppConstants.questionTypeNo
+                      ];
                     } else {
                       _options = [];
                     }
@@ -277,24 +125,24 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
                   );
                 }).toList(),
                 decoration: InputDecoration(
-                  labelText: 'Question Type',
+                  labelText: AppConstants.questionTypeLabelText,
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: AppConstants.sizedBoxSizesHeight),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Options',
-                    style: TextStyle(
+                    AppConstants.optionLabelText,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: AppConstants.sizedBoxSizesHeight),
                   ..._options.map((option) {
                     return Row(
                       children: [
@@ -307,7 +155,7 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           onPressed: () {
                             if (_questionType == 'MCQ') {
                               setState(() {
@@ -319,15 +167,17 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
                       ],
                     );
                   }),
-                  SizedBox(height: 8),
+                  SizedBox(height: AppConstants.sizedBoxSizesHeight),
                   if (_canAddMoreOptions)
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _options.add('');
-                        });
-                      },
-                      child: Text('Add More Option'),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _options.add('');
+                          });
+                        },
+                        child: Text(AppConstants.addMoreOptions),
+                      ),
                     ),
                 ],
               ),
@@ -336,21 +186,13 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        // onPressed: () {
-        //   _updateQuestion();
-        //   Navigator.pushReplacement(
-        //       context,
-        //       MaterialPageRoute(
-        //         builder: (context) => SurveyListScreen(),
-        //       ));
-        // },
         onPressed: () {
           showDialog(
             context: context,
             builder: (_) => ConfirmationDialog(
               onConfirm: () async {
-                await _updateQuestion();
-                DeleteResponseMessage.show(
+                await updateQuestion();
+                ConfirmationResponseMessage.show(
                   context,
                   'Question has been updated successfully.',
                 );
@@ -367,7 +209,7 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
             ),
           );
         },
-        child: Icon(Icons.save),
+        child: const Icon(Icons.save),
       ),
     );
   }
