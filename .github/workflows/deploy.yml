@@ -27,6 +27,6 @@ jobs:
       - name: Deploy to DeployGate
         run: |
           curl -F "file=@build/app/outputs/flutter-apk/app-release.aab" \
-            -F "token=${{deploygate_xusr_cJL4URDqI9TwQCYeXJ45JmDIzQ3P6D_2yj8pZ}}" \
+            -F "token=$deploygate_xusr_cJL4URDqI9TwQCYeXJ45JmDIzQ3P6D_2yj8pZ" \
             -F "message=Automated deployment to DeployGate" \
             https://deploygate.com/api/users/WMKavinga/apps/com.hsenid.surveyapp/deploys
