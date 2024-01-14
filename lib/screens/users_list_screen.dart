@@ -73,18 +73,20 @@ class _UsersScreenState extends State<StatefulWidget> {
         itemCount: _userList.length,
         itemBuilder: (BuildContext context, int index) {
           User user = _userList[index];
-          return ListTile(
-            leading: const Icon(Icons.supervised_user_circle_rounded,size: 50.0,),
-            title: Text(user.username),
-            subtitle: Text(user.email),
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserUpdateScreen(user: user),
-                ),
-              );
-            },
+          return Card(
+             child: ListTile(
+                leading: const Icon(Icons.supervised_user_circle_rounded,size: 50.0,color: Colors.cyan,),
+                title: Text(user.username),
+                subtitle: Text(user.email),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserUpdateScreen(user: user),
+                    ),
+                  );
+                },
+              ),
           );
         },
       ),
@@ -160,7 +162,7 @@ class UserSearchDelegate extends SearchDelegate<String> {
       itemBuilder: (BuildContext context, int index) {
         final User user = filteredList[index];
         return ListTile(
-          leading: const Icon(Icons.supervised_user_circle_rounded, size: 50.0),
+          leading: const Icon(Icons.supervised_user_circle_rounded, size: 50.0,color: Colors.cyan),
           title: Text(user.username,style: TextStyle(color: Colors.black),),
           subtitle: Text(user.email, style: TextStyle(color: Colors.black),),
           onTap: () {

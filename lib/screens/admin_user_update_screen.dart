@@ -86,70 +86,76 @@ class UserUpdateScreenState extends State<UserUpdateScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                controller: _usernameController,
-                //initialValue: _username,
-                decoration: InputDecoration(
-                  labelText: AppConstants.labelTextUserName,
-                  border: const OutlineInputBorder(),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Icon(Icons.supervised_user_circle_sharp, color: Colors.cyan, size: 120.0,),
+                SizedBox(
+                  height: AppConstants.sizedBoxSizesHeight,
                 ),
-                validator: (value) {
-                  return HelperValidator.nameValidate(value!);
-                },
-                onChanged: (value) {},
-              ),
-              SizedBox(
-                height: AppConstants.sizedBoxSizesHeight,
-              ),
-              TextFormField(
-                controller: _userEmailController,
-                decoration: InputDecoration(
-                  labelText: AppConstants.labelEmail,
-                  border: const OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  return HelperValidator.emailValidate(value!);
-                },
-                onChanged: (value) {
-                  setState(() {
-                    _email = value;
-                  });
-                },
-              ),
-              SizedBox(height: AppConstants.sizedBoxSizesHeight),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    showDialog(
-                      context: context,
-                      builder: (_) => ConfirmationDialog(
-                        onConfirm: () async {
-                          //userService.deleteUser(TextFile.token, widget.user.id);
-                          await updateUser();
-                          ConfirmationResponseMessage.show(
-                            context,
-                            'User ${widget.user.username} has been updated successfully.',
-                          );
-                          Navigator.pop(context);
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UsersScreen(),
-                            ),
-                          );
-                        },
-                        operation: AppConstants.operationUpdate,
-                        message: AppConstants.messageUpdate,
-                      ),
-                    );
+                TextFormField(
+                  controller: _usernameController,
+                  //initialValue: _username,
+                  decoration: InputDecoration(
+                    labelText: AppConstants.labelTextUserName,
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    return HelperValidator.nameValidate(value!);
                   },
-                  child: Text(AppConstants.updateUser),
+                  onChanged: (value) {},
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: AppConstants.sizedBoxSizesHeight,
+                ),
+                TextFormField(
+                  controller: _userEmailController,
+                  decoration: InputDecoration(
+                    labelText: AppConstants.labelEmail,
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    return HelperValidator.emailValidate(value!);
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      _email = value;
+                    });
+                  },
+                ),
+                SizedBox(height: AppConstants.sizedBoxSizesHeight),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      showDialog(
+                        context: context,
+                        builder: (_) => ConfirmationDialog(
+                          onConfirm: () async {
+                            //userService.deleteUser(TextFile.token, widget.user.id);
+                            await updateUser();
+                            ConfirmationResponseMessage.show(
+                              context,
+                              'User ${widget.user.username} has been updated successfully.',
+                            );
+                            Navigator.pop(context);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UsersScreen(),
+                              ),
+                            );
+                          },
+                          operation: AppConstants.operationUpdate,
+                          message: AppConstants.messageUpdate,
+                        ),
+                      );
+                    },
+                    child: Text(AppConstants.updateUser),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

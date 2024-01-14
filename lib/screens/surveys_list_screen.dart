@@ -54,7 +54,9 @@ class _SurveyListScreen extends State<StatefulWidget> {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              showSearch(context: context, delegate: SurveySearchDelegate(_surveyList));
+              showSearch(
+                  context: context,
+                  delegate: SurveySearchDelegate(_surveyList));
             },
           ),
         ],
@@ -63,21 +65,23 @@ class _SurveyListScreen extends State<StatefulWidget> {
         itemCount: _surveyList.length,
         itemBuilder: (BuildContext context, int index) {
           Survey survey = _surveyList[index];
-          return ListTile(
-            leading: Icon(
-              Icons.assessment,
-              size: 50.0,
+          return Card(
+            child: ListTile(
+              leading: Icon(
+                Icons.assessment,
+                size: 50.0,color: Colors.cyan,
+              ),
+              title: Text(survey.title),
+              subtitle: Text(survey.description),
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SurveyDetailsScreen(survey: survey),
+                  ),
+                );
+              },
             ),
-            title: Text(survey.title),
-            subtitle: Text(survey.description),
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SurveyDetailsScreen(survey: survey),
-                ),
-              );
-            },
           );
         },
       ),
@@ -93,6 +97,7 @@ class _SurveyListScreen extends State<StatefulWidget> {
     );
   }
 }
+
 class SurveySearchDelegate extends SearchDelegate<String> {
   final List<Survey> surveyList;
 
@@ -146,9 +151,15 @@ class SurveySearchDelegate extends SearchDelegate<String> {
         itemBuilder: (BuildContext context, int index) {
           final Survey survey = surveyList[index];
           return ListTile(
-            leading: const Icon(Icons.assessment, size: 50.0),
-            title: Text(survey.title,style: const TextStyle(color: Colors.black),),
-            subtitle: Text(survey.description,style: const TextStyle(color: Colors.black),),
+            leading: const Icon(Icons.assessment, size: 50.0,color: Colors.cyan),
+            title: Text(
+              survey.title,
+              style: const TextStyle(color: Colors.black),
+            ),
+            subtitle: Text(
+              survey.description,
+              style: const TextStyle(color: Colors.black),
+            ),
             onTap: () {
               close(context, '');
               Navigator.pushReplacement(
@@ -176,8 +187,14 @@ class SurveySearchDelegate extends SearchDelegate<String> {
         final Survey survey = filteredList[index];
         return ListTile(
           leading: const Icon(Icons.assessment, size: 50.0),
-          title: Text(survey.title,style: const TextStyle(color: Colors.black),),
-          subtitle: Text(survey.description,style: const TextStyle(color: Colors.black),),
+          title: Text(
+            survey.title,
+            style: const TextStyle(color: Colors.black),
+          ),
+          subtitle: Text(
+            survey.description,
+            style: const TextStyle(color: Colors.black),
+          ),
           onTap: () {
             close(context, '');
             Navigator.pushReplacement(

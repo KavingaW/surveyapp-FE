@@ -67,6 +67,7 @@ class _ResultsListScreenState extends State<ResultsListScreen> {
             leading: const Icon(
               Icons.assessment,
               size: 50.0,
+              color: Colors.cyan,
             ),
             title: Text(survey.title),
             subtitle: Text(survey.description),
@@ -138,7 +139,7 @@ class SurveySearchDelegate extends SearchDelegate<String> {
         itemBuilder: (BuildContext context, int index) {
           final Survey survey = surveyList[index];
           return ListTile(
-            leading: const Icon(Icons.assessment, size: 50.0),
+            leading: const Icon(Icons.assessment, size: 50.0,color: Colors.cyan),
             title: Text(
               survey.title,
               style: const TextStyle(color: Colors.black),
@@ -175,7 +176,7 @@ class SurveySearchDelegate extends SearchDelegate<String> {
       itemBuilder: (BuildContext context, int index) {
         final Survey survey = filteredList[index];
         return ListTile(
-          leading: const Icon(Icons.assessment, size: 50.0),
+          leading: const Icon(Icons.assessment, size: 50.0,),
           title: Text(
             survey.title,
             style: const TextStyle(color: Colors.black),

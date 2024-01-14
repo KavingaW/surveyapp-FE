@@ -65,6 +65,10 @@ class _EditSurveyScreenState extends State<EditSurveyScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Icon(Icons.assessment, color: Colors.cyan, size: 120.0,),
+              SizedBox(
+                height: AppConstants.sizedBoxSizesHeight,
+              ),
               TextField(
                 controller: _titleController,
                 decoration: const InputDecoration(

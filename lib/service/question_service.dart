@@ -8,8 +8,6 @@ import 'package:surveyapp/model/survey_api_model.dart';
 import 'package:surveyapp/service/service_constants.dart';
 
 import '../interceptor/request_interceptor.dart';
-import '../screens/survey_details_screen.dart';
-import '../utils/constants.dart';
 
 class QuestionService {
   String questionServiceUrl = ServiceConstants.QUESTION_SERVICE_URL;
