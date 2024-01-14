@@ -85,6 +85,10 @@ class _QuestionUpdateScreenState extends State<QuestionUpdateScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const Icon(Icons.question_mark_outlined, color: Colors.cyan, size: 120.0,),
+            SizedBox(
+              height: AppConstants.sizedBoxSizesHeight,
+            ),
             SizedBox(height: AppConstants.sizedBoxSizesHeight),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),

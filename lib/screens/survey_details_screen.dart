@@ -136,13 +136,24 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Center(
+                    child: const Icon(
+                      Icons.assessment,
+                      color: Colors.cyan,
+                      size: 120.0,
+                    ),
+                  ),
+                  SizedBox(
+                    height: AppConstants.sizedBoxSizesHeight,
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       _survey.title,
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                   Padding(
@@ -172,14 +183,15 @@ class _SurveyDetailsScreenState extends State<SurveyDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    question.text,
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
+                                  Expanded(
+                                    child: Text(
+                                      question.text,
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.delete),

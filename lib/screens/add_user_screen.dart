@@ -35,6 +35,10 @@ class AddUserState extends State<AddUser> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const Icon(Icons.supervised_user_circle_sharp, color: Colors.cyan, size: 120.0,),
+              SizedBox(
+                height: AppConstants.sizedBoxSizesHeight,
+              ),
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(

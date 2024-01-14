@@ -22,7 +22,8 @@ class _SurveyResultScreenState extends State<SurveyResultScreen> {
   @override
   void initState() {
     super.initState();
-    _surveyResponse = _surveyResultService.fetchSurveyResults(widget.surveyId, widget.userId);
+    _surveyResponse =
+        _surveyResultService.fetchSurveyResults(widget.surveyId, widget.userId);
   }
 
   @override
@@ -36,54 +37,89 @@ class _SurveyResultScreenState extends State<SurveyResultScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final surveyData = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Survey Name: ${surveyData.surveyName}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            color: Colors.blue,
+                            child: Image.asset(
+                              'assets/images/user-surevy-result.png',
+                              scale: 5,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            surveyData.surveyName,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            surveyData.surveyDescription,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Survey Description: ${surveyData.surveyDescription}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Question Responses:',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Question Responses',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: surveyData.questionMap.length,
-                    itemBuilder: (context, index) {
-                      final question =
-                          surveyData.questionMap.keys.elementAt(index);
-                      final answer = surveyData.questionMap[question];
-                      return ListTile(
-                        title: Text(
-                          question,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(answer!),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Number of Answers: ${surveyData.numberOfAnswers}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
+                    const SizedBox(height: 10),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: surveyData.questionMap.length,
+                      itemBuilder: (context, index) {
+                        final question =
+                            surveyData.questionMap.keys.elementAt(index);
+                        int number = index + 1;
+                        final answer = surveyData.questionMap[question];
+                        return Card(
+                          child: ListTile(
+                            title: Text(
+                              '$number. $question',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Answer Submitted:',
+                                ),
+                                Text(
+                                  answer!,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Number of Answers: ${surveyData.numberOfAnswers}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
             );
           } else if (snapshot.hasError) {

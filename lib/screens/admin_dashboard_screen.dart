@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:surveyapp/service/auth_service.dart';
 import '../utils/constants.dart';
 import '../widgets/confirmation_response_widget.dart';
@@ -51,9 +52,9 @@ class AdminDashboard extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Icon(Icons.person, size: 80.0),
+                    const Icon(Icons.person, size: 80.0, color: Colors.indigo),
                     SizedBox(height: AppConstants.sizedBoxSizesHeight),
-                    Text(AppConstants.userTileName),
+                    Text(AppConstants.userTileName,style: const TextStyle(fontSize: 25.0,fontFamily: 'AlfaStableOne'),),
                   ],
                 ),
               ),
@@ -66,9 +67,9 @@ class AdminDashboard extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Icon(Icons.assignment, size: 80.0),
+                    const Icon(Icons.assignment, size: 80.0, color: Colors.indigo),
                     SizedBox(height: AppConstants.sizedBoxSizesHeight),
-                    Text(AppConstants.surveyTileName),
+                    Text(AppConstants.surveyTileName,style: const TextStyle(fontSize: 25.0,fontFamily: 'AlfaStableOne'),),
                   ],
                 ),
               ),
@@ -81,9 +82,9 @@ class AdminDashboard extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Icon(Icons.poll, size: 80.0),
+                    const Icon(Icons.poll, size: 80.0, color: Colors.indigo),
                     SizedBox(height: AppConstants.sizedBoxSizesHeight),
-                    Text(AppConstants.resultTileNme),
+                    Text(AppConstants.resultTileNme, style: const TextStyle(fontSize: 25.0,fontFamily: 'AlfaStableOne',),),
                   ],
                 ),
               ),

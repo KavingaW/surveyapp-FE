@@ -25,67 +25,79 @@ class _AddSurveyScreenState extends State<AddSurveyScreen> {
         title: Text(AppConstants.surveyAddScreenTitle),
       ),
       body: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children:[
-            SizedBox(
-              height: AppConstants.sizedBoxSizesHeight,
-            ),
-            TextFormField(
-              scrollPadding: EdgeInsets.all(AppConstants.edgeInsetsValue),
-              decoration: InputDecoration(
-                hintText: AppConstants.hintSurveyTitle,
-                border: OutlineInputBorder(),
+          key: _formKey,
+          child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.assessment, color: Colors.cyan, size: 120.0,),
+                    SizedBox(
+                      height: AppConstants.sizedBoxSizesHeight,
+                    ),
+                    TextFormField(
+                      scrollPadding: EdgeInsets.all(
+                          AppConstants.edgeInsetsValue),
+                      decoration: InputDecoration(
+                        labelText: AppConstants.hintSurveyTitle,
+                        hintText: AppConstants.hintSurveyTitle,
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        return HelperValidator.validateSurveyTitle(value!);
+                      },
+                      onSaved: (value) {
+                        _surveyTitle = value!;
+                      },
+                    ),
+                    SizedBox(
+                      height: AppConstants.sizedBoxSizesHeight,
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText: AppConstants.hintSurveyDescription,
+                        labelText: AppConstants.hintSurveyDescription,
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        return HelperValidator.validateSurveyDescription(
+                            value!);
+                      },
+                      onSaved: (value) {
+                        _surveyDescription = value!;
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState?.save();
+                            Survey survey = Survey(
+                                id: "",
+                                title: _surveyTitle,
+                                description: _surveyDescription,
+                                questions: [],
+                                assigned: []);
+                            Survey createdSurvey =
+                            await _surveyService.addSurvey(survey);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      SurveyDetailsScreen(
+                                          survey: createdSurvey)),
+                            );
+                          }
+                        },
+                        child: Text(AppConstants.addSurvey),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              validator: (value) {
-                return HelperValidator.validateSurveyTitle(value!);
-              },
-              onSaved: (value) {
-                _surveyTitle = value!;
-              },
-            ),
-            SizedBox(
-              height: AppConstants.sizedBoxSizesHeight,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                hintText: AppConstants.hintSurveyDescription,
-              ),
-              validator: (value) {
-                return HelperValidator.validateSurveyDescription(value!);
-              },
-              onSaved: (value) {
-                _surveyDescription = value!;
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState?.save();
-                    Survey survey = Survey(
-                        id: "",
-                        title: _surveyTitle,
-                        description: _surveyDescription,
-                        questions: [],
-                        assigned: []);
-                    Survey createdSurvey =
-                        await _surveyService.addSurvey(survey);
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              SurveyDetailsScreen(survey: createdSurvey)),
-                    );
-                  }
-                },
-                child: Text(AppConstants.addSurvey),
-              ),
-            ),
-          ],
-        ),
+          )
       ),
     );
   }

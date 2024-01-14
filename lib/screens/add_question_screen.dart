@@ -79,97 +79,107 @@ class _QuestionAddScreenState extends State<QuestionAddScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                controller: _textController,
-                decoration: InputDecoration(
-                  labelText: AppConstants.questionLabelText,
-                  hintText: AppConstants.questionTitleHint,
-                ),
-                validator: (value) {
-                  return HelperValidator.validateQuestionText(value!);
-                },
-              ),
-              SizedBox(height: AppConstants.sizedBoxSizesHeight),
-              DropdownButtonFormField(
-                value: _questionType,
-                items: [
-                  DropdownMenuItem(
-                    value: AppConstants.questionTypeMcq,
-                    child: Text(AppConstants.questionTypeMcq),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            const Icon(Icons.question_mark_outlined, color: Colors.cyan, size: 120.0,),
+            SizedBox(
+              height: AppConstants.sizedBoxSizesHeight,
+            ),
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: _textController,
+                    decoration: InputDecoration(
+                      labelText: AppConstants.questionLabelText,
+                      hintText: AppConstants.questionTitleHint,
+                    ),
+                    validator: (value) {
+                      return HelperValidator.validateQuestionText(value!);
+                    },
                   ),
-                  DropdownMenuItem(
-                    value: AppConstants.questionTypeYesNo,
-                    child: Text(AppConstants.questionTypeYesNo),
+                  SizedBox(height: AppConstants.sizedBoxSizesHeight),
+                  DropdownButtonFormField(
+                    value: _questionType,
+                    items: [
+                      DropdownMenuItem(
+                        value: AppConstants.questionTypeMcq,
+                        child: Text(AppConstants.questionTypeMcq),
+                      ),
+                      DropdownMenuItem(
+                        value: AppConstants.questionTypeYesNo,
+                        child: Text(AppConstants.questionTypeYesNo),
+                      ),
+                    ],
+                    decoration: InputDecoration(
+                      labelText: AppConstants.questionTypeLabelText,
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _questionType = value.toString();
+                        _options.clear();
+                        if (_questionType == AppConstants.questionTypeYesNo) {
+                          _disableAddOptionButton = true;
+                          _options.addAll([
+                            AppConstants.questionTypeYes,
+                            AppConstants.questionTypeNo
+                          ]);
+                        } else {
+                          _disableAddOptionButton = false;
+                        }
+                      });
+                    },
+                  ),
+                  SizedBox(height: AppConstants.sizedBoxSizesHeight),
+                  Text(AppConstants.optionLabelText),
+                  ..._options.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final option = entry.value;
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            initialValue: option,
+                            decoration: InputDecoration(
+                              hintText: 'Option ${index + 1}',
+                            ),
+                            validator: (value) {
+                              return HelperValidator.validateOption(value!);
+                            },
+                            onChanged: (value) => updateOption(index, value),
+                          ),
+                        ),
+                        if (!_disableAddOptionButton &&
+                            index == _options.length - 1)
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => deleteOption(index),
+                          ),
+                      ],
+                    );
+                  }),
+                  SizedBox(height: AppConstants.sizedBoxSizesHeight),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: !_disableAddOptionButton ? addOption : null,
+                      child: Text(AppConstants.optionAddTitle),
+                    ),
+                  ),
+                  SizedBox(height: AppConstants.sizedBoxSizesHeight),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: submitForm,
+                      child: Text(AppConstants.questionAddTitle),
+                    ),
                   ),
                 ],
-                decoration: InputDecoration(
-                  labelText: AppConstants.questionTypeLabelText,
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _questionType = value.toString();
-                    _options.clear();
-                    if (_questionType == AppConstants.questionTypeYesNo) {
-                      _disableAddOptionButton = true;
-                      _options.addAll([
-                        AppConstants.questionTypeYes,
-                        AppConstants.questionTypeNo
-                      ]);
-                    } else {
-                      _disableAddOptionButton = false;
-                    }
-                  });
-                },
               ),
-              SizedBox(height: AppConstants.sizedBoxSizesHeight),
-              Text(AppConstants.optionLabelText),
-              ..._options.asMap().entries.map((entry) {
-                final index = entry.key;
-                final option = entry.value;
-                return Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        initialValue: option,
-                        decoration: InputDecoration(
-                          hintText: 'Option ${index + 1}',
-                        ),
-                        validator: (value) {
-                          return HelperValidator.validateOption(value!);
-                        },
-                        onChanged: (value) => updateOption(index, value),
-                      ),
-                    ),
-                    if (!_disableAddOptionButton &&
-                        index == _options.length - 1)
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => deleteOption(index),
-                      ),
-                  ],
-                );
-              }),
-              SizedBox(height: AppConstants.sizedBoxSizesHeight),
-              Center(
-                child: ElevatedButton(
-                  onPressed: !_disableAddOptionButton ? addOption : null,
-                  child: Text(AppConstants.optionAddTitle),
-                ),
-              ),
-              SizedBox(height: AppConstants.sizedBoxSizesHeight),
-              Center(
-                child: ElevatedButton(
-                  onPressed: submitForm,
-                  child: Text(AppConstants.questionAddTitle),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
